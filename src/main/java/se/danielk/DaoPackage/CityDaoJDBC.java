@@ -1,61 +1,128 @@
 package se.danielk.DaoPackage;
 
 import se.danielk.City;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
+import se.danielk.SQLConnection.MySQLConnection;
+import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CityDaoJDBC implements CityDao {
 
-    Connection connection;
-    {
-
-        try {
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/world",
-                    "root",
-                    "0611");
-        }
-        catch (SQLException e){
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public City findById(int id) {
         String query = "SELECT * FROM city WHERE id = ?";
+        City city = new City();
+        try (
+                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
+                )
+        {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)){
+            if (resultSet.next()){
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+                resultSet.getInt("ID");
+                resultSet.getString("Name");
+                resultSet.getString("CountryCode");
+                resultSet.getString("District");
+                resultSet.getInt("Population");
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+    }
+    return city;
+
     }
 
-    @Override
+        @Override
     public List<City> findByCode(String code) {
         String query = "SELECT * FROM city WHERE CountryCode = ?";
-        return List.of();
+        List<City> cityList = new ArrayList<>();
+
+            try (
+                    PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
+            )
+            {
+                preparedStatement.setString(1, code);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()){
+                    cityList.add(new City(
+
+                    resultSet.getInt("ID"),
+                    resultSet.getString("Name"),
+                    resultSet.getString("CountryCode"),
+                    resultSet.getString("District"),
+                    resultSet.getInt("Population")));
+                }
+
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
+            return cityList;
     }
 
     @Override
     public List<City> findByName(String name) {
         String query = "SELECT * FROM city WHERE name = ?";
-        return List.of();
+        List<City> nameList = new ArrayList<>();
+        try (
+                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
+        )
+        {
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                nameList.add(new City(
+
+                        resultSet.getInt("ID"),
+                        resultSet.getString("Name"),
+                        resultSet.getString("CountryCode"),
+                        resultSet.getString("District"),
+                        resultSet.getInt("Population")));
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return nameList;
     }
 
     @Override
     public List<City> findAll() {
         String query = "SELECT * FROM city";
-        return List.of();
+        List<City> allList = new ArrayList<>();
+
+        try (
+                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
+        ){
+            ResultSet resultSet = preparedStatement.executeQuery(query);
+            if (resultSet.next()){
+                allList.add(new City(
+
+                        resultSet.getInt("ID"),
+                        resultSet.getString("Name"),
+                        resultSet.getString("CountryCode"),
+                        resultSet.getString("District"),
+                        resultSet.getInt("Population")));
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return allList;
     }
 
     @Override
     public City add(City city) {
+        return null;
+    }
+
+    @Override
+    public City update(City city) {
         return null;
     }
 
