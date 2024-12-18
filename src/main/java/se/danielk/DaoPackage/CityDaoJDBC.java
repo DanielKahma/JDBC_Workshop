@@ -11,8 +11,8 @@ import java.util.List;
 public class CityDaoJDBC implements CityDao {
 
     Connection connection;
-
     {
+
         try {
             connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/world",
