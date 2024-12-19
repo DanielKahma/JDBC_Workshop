@@ -118,16 +118,68 @@ public class CityDaoJDBC implements CityDao {
 
     @Override
     public City add(City city) {
-        return null;
+        String query = "add to city (name, countrycode, district, population) values (?,?,?,?)";
+        try (
+                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        ){
+            preparedStatement.setString(1, city.getName());
+            preparedStatement.setString(2, city.getCountryCode());
+            preparedStatement.setString(3, city.getDistrict());
+            preparedStatement.setInt(4, city.getPopulation());
+
+            int result = preparedStatement.executeUpdate();
+
+            System.out.println("city has been successfully added!");
+
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return city;
     }
 
     @Override
     public City update(City city) {
-        return null;
+        String query = "update city set name=?, countrycode=?, district=?, population=? WHERE id=?";
+
+        try (
+                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
+        ){
+            preparedStatement.setInt(1, city.getId());
+            preparedStatement.setString(2, city.getName());
+            preparedStatement.setString(3, city.getCountryCode());
+            preparedStatement.setString(4, city.getDistrict());
+            preparedStatement.setInt(5, city.getPopulation());
+
+            int result = preparedStatement.executeUpdate();
+
+            System.out.println("city has been successfully updated!");
+
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return city;
     }
 
     @Override
     public int delete(City city) {
+        String query = "delete FROM city WHERE id=?";
+
+        try (
+                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
+        ){
+            preparedStatement.setInt(1, city.getId());
+            int result = preparedStatement.executeUpdate();
+
+            System.out.println("City has been successfully deleted!");
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+
         return 0;
     }
 }
