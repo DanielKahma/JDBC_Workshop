@@ -24,11 +24,11 @@ public class CityDaoJDBC implements CityDao {
 
             if (resultSet.next()){
 
-                resultSet.getInt("ID");
-                resultSet.getString("Name");
-                resultSet.getString("CountryCode");
-                resultSet.getString("District");
-                resultSet.getInt("Population");
+                city.setId(resultSet.getInt(1));
+                city.setName(resultSet.getString(2));
+                city.setCountryCode(resultSet.getString(3));
+                city.setDistrict(resultSet.getString(4));
+                city.setPopulation(resultSet.getInt(5));
             }
 
         } catch(SQLException e) {
@@ -101,7 +101,7 @@ public class CityDaoJDBC implements CityDao {
                 PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query);
         ){
             ResultSet resultSet = preparedStatement.executeQuery(query);
-            if (resultSet.next()){
+            while (resultSet.next()){
                 allList.add(new City(
 
                         resultSet.getInt("ID"),
@@ -118,10 +118,11 @@ public class CityDaoJDBC implements CityDao {
 
     @Override
     public City add(City city) {
-        String query = "add to city (name, countrycode, district, population) values (?,?,?,?)";
+        String query = "insert into city (name, countrycode, district, population) values (?,?,?,?)";
         try (
-                PreparedStatement preparedStatement = MySQLConnection.getConnection().prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-        ){
+                Connection connection = MySQLConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+        ) {
             preparedStatement.setString(1, city.getName());
             preparedStatement.setString(2, city.getCountryCode());
             preparedStatement.setString(3, city.getDistrict());
@@ -129,13 +130,9 @@ public class CityDaoJDBC implements CityDao {
 
             int result = preparedStatement.executeUpdate();
 
-            System.out.println("city has been successfully added!");
-
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return city;
     }
 
